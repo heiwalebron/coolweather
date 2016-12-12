@@ -49,6 +49,12 @@ public class WeatherActivity extends AppCompatActivity {
 
     private TextView weatherInfoText;
 
+    private TextView dirText;
+
+    private TextView scText;
+
+    private TextView spdText;
+
     private LinearLayout forecastLayout;
 
     private TextView aqiText;
@@ -82,6 +88,9 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime=(TextView)findViewById(R.id.title_update_time);
         degreeText=(TextView)findViewById(R.id.degree_text);
         weatherInfoText=(TextView)findViewById(R.id.weather_info_text);
+        dirText=(TextView)findViewById(R.id.dir_text);
+        scText=(TextView)findViewById(R.id.sc_text);
+        spdText=(TextView)findViewById(R.id.spd_text);
         forecastLayout=(LinearLayout)findViewById(R.id.forecast_layout);
         aqiText=(TextView)findViewById(R.id.aqi_text);
         pm25Text=(TextView)findViewById(R.id.pm25_text);
@@ -94,7 +103,7 @@ public class WeatherActivity extends AppCompatActivity {
         navButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
+                drawerLayout.openDrawer(GravityCompat.END);
             }
         });
         swipeRefresh=(SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
@@ -157,8 +166,6 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weather);
-                            Intent intent=new Intent(getApplicationContext(), AutoUpdateService.class);
-                            startActivity(intent);
                         }else {
                             Toast.makeText(WeatherActivity.this,"获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }
@@ -208,10 +215,16 @@ public class WeatherActivity extends AppCompatActivity {
         String updateTime=weather.basic.update.updateTime.split(" ")[1];
         String degree=weather.now.temperature+"℃";
         String weatherInfo=weather.now.more.info;
+        String dir=weather.now.wind.info_a;
+        String sc=weather.now.wind.info_b+" 级";
+        String spd=weather.now.wind.info_c;
         titleCity.setText(cityName);
         titleUpdateTime.setText(updateTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        dirText.setText(dir);
+        scText.setText(sc);
+        spdText.setText(spd);
         forecastLayout.removeAllViews();
         for (Forecast forecast : weather.forecastList){
             View view=LayoutInflater.from(this).inflate(R.layout.forecast_item,forecastLayout,false);
@@ -236,5 +249,7 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 }
